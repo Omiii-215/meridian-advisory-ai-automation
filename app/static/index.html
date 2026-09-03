@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meridian Advisory - AI Workflow & Compliance Platform</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="logo-badge"><i class="fa-solid fa-scale-balanced"></i></div>
+                <div>
+                    <h1>Meridian Advisory</h1>
+                    <p class="subtitle">AI-Assisted Workflow & Compliance Management System</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="candidate-tag">
+                    <i class="fa-solid fa-user-check"></i>
+                    <span>Om S Habib (via Internshala)</span>
+                </div>
+                <div class="date-badge">
+                    <i class="fa-regular fa-calendar-days"></i>
+                    <span>Today: 19-Aug-2026 (Wed)</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- Hero Metrics -->
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon blue"><i class="fa-solid fa-ticket"></i></div>
+                <div>
+                    <div class="metric-val" id="metricTotal">10</div>
+                    <div class="metric-lbl">Total Tickets</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon amber"><i class="fa-solid fa-folder-open"></i></div>
+                <div>
+                    <div class="metric-val" id="metricOpen">7</div>
+                    <div class="metric-lbl">Open Active</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div>
+                    <div class="metric-val" id="metricSlaBreach">5</div>
+                    <div class="metric-lbl">SLA Breaches (>2d)</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon purple"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                <div>
+                    <div class="metric-val" id="metricStatOverdue">2</div>
+                    <div class="metric-lbl">Statutory Expired</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon slate"><i class="fa-solid fa-bug"></i></div>
+                <div>
+                    <div class="metric-val" id="metricAnomalies">9</div>
+                    <div class="metric-lbl">Data Traps Caught</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab Navigation -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('ticketsTab')">
+                <i class="fa-solid fa-list-check"></i> Tickets & SLA Board
+            </button>
+            <button class="tab-btn" onclick="switchTab('auditorTab')">
+                <i class="fa-solid fa-shield-halved"></i> Data Quality Auditor (9 Traps)
+            </button>
+            <button class="tab-btn" onclick="switchTab('simulatorTab')">
+                <i class="fa-solid fa-robot"></i> AI Email Triage Simulator
+            </button>
+            <button class="tab-btn" onclick="switchTab('reviewTab')">
+                <i class="fa-solid fa-user-shield"></i> Human Review Queue (<span id="reviewBadgeCount">0</span>)
+            </button>
+            <button class="tab-btn" onclick="switchTab('reportTab')">
+                <i class="fa-solid fa-file-invoice"></i> 30-Sec Executive Report
+            </button>
+        </nav>
+
+        <!-- TAB 1: Tickets Dashboard -->
+        <section id="ticketsTab" class="tab-content active">
+            <div class="toolbar">
+                <div class="filter-group">
+                    <button class="filter-chip active" onclick="filterTickets('all', this)">All</button>
+                    <button class="filter-chip" onclick="filterTickets('Open', this)">Open Only</button>
+                    <button class="filter-chip" onclick="filterTickets('Pending', this)">Pending</button>
+                    <button class="filter-chip" onclick="filterTickets('Closed', this)">Closed</button>
+                    <button class="filter-chip red" onclick="filterTickets('SLA_BREACH', this)"><i class="fa-solid fa-bell"></i> SLA Breaches</button>
+                </div>
+                <div class="actions-group">
+                    <button class="btn btn-secondary" onclick="resetTickets()"><i class="fa-solid fa-rotate-left"></i> Reset Baseline</button>
+                    <button class="btn btn-primary" onclick="openNewTicketModal()"><i class="fa-solid fa-plus"></i> New Ticket</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Ticket ID</th>
+                            <th>Client Name</th>
+                            <th>Status</th>
+                            <th>Created Date</th>
+                            <th>Next Action Date</th>
+                            <th>Statutory Due Date</th>
+                            <th>Assigned Owner</th>
+                            <th>Working-Day SLA Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ticketsTableBody">
+                        <!-- Loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 2: Data Quality Auditor -->
+        <section id="auditorTab" class="tab-content">
+            <div class="audit-header">
+                <div>
+                    <h2>Automated Data Quality Auditor (Part C1 Traps Audit)</h2>
+                    <p class="section-desc">Detects duplicates, naming fragmentation, missing owners, weekend violations, and statutory breaches in real time.</p>
+                </div>
+                <div class="audit-quick-actions">
+                    <button class="btn btn-primary" onclick="fixMergeDuplicates()"><i class="fa-solid fa-code-merge"></i> 1-Click Merge (T-101/T-105)</button>
+                    <button class="btn btn-secondary" onclick="fixCanonicalizeClients()"><i class="fa-solid fa-wand-magic-sparkles"></i> 1-Click Normalize Acme Names</button>
+                </div>
+            </div>
+            <div id="anomaliesList" class="anomalies-grid">
+                <!-- Loaded dynamically -->
+            </div>
+        </section>
+
+        <!-- TAB 3: AI Email Triage Simulator -->
+        <section id="simulatorTab" class="tab-content">
+            <div class="simulator-layout">
+                <div class="simulator-left">
+                    <h3>Simulate Incoming Client Email</h3>
+                    <p class="section-desc">Select an assessment sample or compose a custom email to test classification, guardrails, and routing.</p>
+                    
+                    <div class="template-selector">
+                        <label>Load Test Template:</label>
+                        <select id="emailTemplateSelect" onchange="loadEmailTemplate()">
+                            <option value="1">Email 1: Bank Statement (Record Submission)</option>
+                            <option value="2">Email 2: Ticket #4521 Follow-up (GST Filing)</option>
+                            <option value="3">Email 3: URGENT!! Please handle asap (Ambiguous)</option>
+                            <option value="custom">Custom Email Composition</option>
+                        </select>
+                    </div>
+
+                    <form id="emailSimForm" onsubmit="handleEmailSubmit(event)">
+                        <div class="form-group">
+                            <label>From (Client Email):</label>
+                            <input type="email" id="emailSender" required value="finance@acmetextiles.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Subject:</label>
+                            <input type="text" id="emailSubject" required value="Quarterly Compliance Statement">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Body:</label>
+                            <textarea id="emailBody" rows="5" required>Hi team, please find attached our Q2 bank statement for your records. Thanks.</textarea>
+                        </div>
+                        <div class="form-row">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="emailAttachment" checked>
+                                Physical file attached (MIME multipart)
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="emailThreadReply">
+                                Is reply to existing thread (Headers present)
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary full-width" id="btnRunTriage">
+                            <i class="fa-solid fa-bolt"></i> Run AI Intake & Guardrail Engine
+                        </button>
+                    </form>
+                </div>
+
+                <div class="simulator-right">
+                    <h3>Engine Execution Results & Validation</h3>
+                    <div id="simEmptyState" class="empty-state">
+                        <i class="fa-solid fa-microchip"></i>
+                        <p>Run the simulator on the left to inspect structured JSON, tripwire assertions, and automated routing.</p>
+                    </div>
+                    <div id="simResultContainer" class="result-container" style="display:none;">
+                        <!-- Injected results -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: Human Review Queue -->
+        <section id="reviewTab" class="tab-content">
+            <div class="audit-header">
+                <div>
+                    <h2>Human-in-the-Loop Triage & Sign-off Queue</h2>
+                    <p class="section-desc">Low-confidence predictions (&lt;0.80), ambiguous requests, and statutory date commitments require verified human approval.</p>
+                </div>
+            </div>
+            <div id="reviewQueueList" class="review-grid">
+                <!-- Loaded dynamically -->
+            </div>
+        </section>
+
+        <!-- TAB 5: 30-Second Executive Report -->
+        <section id="reportTab" class="tab-content">
+            <div class="report-header">
+                <div>
+                    <h2>Meridian Daily Compliance Digest</h2>
+                    <p class="section-desc">One-page executive exception report designed for a Managing Partner who has 30 seconds to review risks.</p>
+                </div>
+                <div class="report-actions">
+                    <button class="btn btn-secondary" onclick="copyReportLines()"><i class="fa-regular fa-copy"></i> Copy Alerts</button>
+                    <a href="/api/reports/daily-exceptions/pdf" class="btn btn-primary" download><i class="fa-solid fa-file-pdf"></i> Download PDF Digest</a>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <div class="report-top-banner">
+                    <span class="pulse-indicator"></span>
+                    <strong>EXECUTIVE 30-SECOND EXCEPTION SUMMARY (TOP THREE ALERTS)</strong>
+                </div>
+                <div id="executiveLinesContainer" class="executive-lines">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+
+            <div class="report-metrics-box" id="reportMetricsBox">
+                <!-- Metrics loaded dynamically -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal for New / Edit Ticket -->
+    <div id="ticketModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Create New Ticket</h3>
+                <button class="modal-close" onclick="closeTicketModal()">&times;</button>
+            </div>
+            <form id="ticketForm" onsubmit="handleTicketSave(event)">
+                <input type="hidden" id="modalTicketId">
+                <div class="form-group">
+                    <label>Client Name:</label>
+                    <input type="text" id="modalClient" required placeholder="e.g. Acme Textiles Pvt Ltd">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Status:</label>
+                        <select id="modalStatus">
+                            <option value="Open">Open</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Closed">Closed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Assigned Owner:</label>
+                        <input type="text" id="modalOwner" placeholder="e.g. Rajesh Sharma">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Next Action Date (YYYY-MM-DD):</label>
+                        <input type="date" id="modalNextAction">
+                    </div>
+                    <div class="form-group">
+                        <label>Statutory Due Date (YYYY-MM-DD):</label>
+                        <input type="date" id="modalStatutory">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeTicketModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Ticket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>
